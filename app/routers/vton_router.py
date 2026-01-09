@@ -104,31 +104,47 @@ async def try_on_upload(
     Upload images directly instead of providing URLs.
     Supports JPG, PNG image formats.
     """
-    # Convert uploads to data URIs
-    person_data = await person_image.read()
-    person_uri = f"data:{person_image.content_type};base64,{base64.b64encode(person_data).decode()}"
+    import logging
+    logger = logging.getLogger(__name__)
 
-    garment_data = await garment_image.read()
-    garment_uri = f"data:{garment_image.content_type};base64,{base64.b64encode(garment_data).decode()}"
+    try:
+        logger.info(f"Received upload request - person: {person_image.filename}, garment: {garment_image.filename}")
 
-    result = await vton_service.try_on(
-        person_image=person_uri,
-        garment_image=garment_uri,
-        garment_description=garment_description,
-        category=category,
-        denoise_steps=denoise_steps,
-    )
+        # Convert uploads to data URIs
+        person_data = await person_image.read()
+        logger.info(f"Person image size: {len(person_data)} bytes")
+        person_uri = f"data:{person_image.content_type};base64,{base64.b64encode(person_data).decode()}"
 
-    if not result.success:
-        raise HTTPException(status_code=500, detail=result.error)
+        garment_data = await garment_image.read()
+        logger.info(f"Garment image size: {len(garment_data)} bytes")
+        garment_uri = f"data:{garment_image.content_type};base64,{base64.b64encode(garment_data).decode()}"
 
-    return TryOnResponse(
-        success=result.success,
-        output_url=result.output_url,
-        elapsed_time=result.elapsed_time,
-        input_size=result.input_size,
-        error=result.error,
-    )
+        logger.info("Calling VTON service...")
+        result = await vton_service.try_on(
+            person_image=person_uri,
+            garment_image=garment_uri,
+            garment_description=garment_description,
+            category=category,
+            denoise_steps=denoise_steps,
+        )
+
+        if not result.success:
+            logger.error(f"VTON service failed: {result.error}")
+            raise HTTPException(status_code=500, detail=result.error)
+
+        logger.info(f"VTON service succeeded in {result.elapsed_time:.1f}s")
+        return TryOnResponse(
+            success=result.success,
+            output_url=result.output_url,
+            elapsed_time=result.elapsed_time,
+            input_size=result.input_size,
+            error=result.error,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Unexpected error in try_on_upload")
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
 @router.get("/info")
