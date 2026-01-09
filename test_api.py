@@ -180,7 +180,7 @@ class APITester:
 
                 if result.get('success'):
                     self.print_success(f"虚拟试穿成功！耗时: {elapsed:.1f}秒")
-                    self.print_info(f"输出URL: {result.get('output_url', 'N/A')[:80]}...")
+                    self.print_info(f"输出URL: {result.get('output_url', 'N/A')}")
 
                     input_size = result.get('input_size', {})
                     if input_size:
