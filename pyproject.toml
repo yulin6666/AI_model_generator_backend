@@ -1,0 +1,14 @@
+[project]
+name = "ai-model-generator-backend"
+
+[tool.poetry]
+name = "ai-model-generator-backend"
+version = "0.1.0"
+description = "Virtual Try-On API Backend"
+
+[build-system]
+requires = ["poetry-core"]
+
+# Nixpacks will use this
+[tool.nixpacks]
+python_version = "3.11"

@@ -1,0 +1,33 @@
+# ==================================================
+# IDM-VTON API 依赖项
+# ==================================================
+
+# Web框架
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# Replicate API客户端
+replicate==0.25.1
+
+# 文件上传处理
+python-multipart==0.0.9
+
+# HTTP客户端（异步）
+httpx==0.26.0
+
+# 数据验证
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# 环境变量管理
+python-dotenv==1.0.0
+
+# 图片处理
+Pillow==10.2.0
+
+# 异步文件操作
+aiofiles==23.2.1
+
+# 可选：用于测试的依赖
+# requests==2.31.0
+
